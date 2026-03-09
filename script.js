@@ -1,63 +1,134 @@
+const chatBox = document.getElementById("chatBox")
+
+const replies = {
+
+"hi":"Hello!",
+"hello":"Hi there!",
+"hey":"Hey!",
+"ok":"Alright!",
+"okay":"Okay!",
+"thanks":"You're welcome!",
+"thank you":"No problem!",
+"bye":"Goodbye!",
+"good morning":"Good morning!",
+"good night":"Good night!",
+"how are you":"I'm doing great!",
+"what is ai":"AI means Artificial Intelligence.",
+"who made you":"I was created by the developer.",
+"help":"You can chat with me or generate photos."
+
+}
+
 function startChat(){
 
-let chat=document.getElementById("chatBox");
+addMessage("ai","Hello! How can I help you today?")
 
-chat.innerHTML="<p><b>Ahmad AI:</b> Hello Ahmad! How can I help you?</p>";
+}
+
+function sendMessage(){
+
+let input=document.getElementById("userInput")
+
+let text=input.value.toLowerCase()
+
+if(text==="") return
+
+addMessage("user",text)
+
+let reply=findReply(text)
+
+typingEffect(reply)
+
+input.value=""
+
+}
+
+function findReply(text){
+
+for(let key in replies){
+
+if(text.includes(key)){
+
+return replies[key]
+
+}
+
+}
+
+return "Interesting! Tell me more."
+
+}
+
+function addMessage(type,text){
+
+let msg=document.createElement("div")
+
+msg.classList.add("message",type)
+
+msg.innerText=text
+
+chatBox.appendChild(msg)
+
+chatBox.scrollTop=chatBox.scrollHeight
+
+}
+
+function typingEffect(reply){
+
+let msg=document.createElement("div")
+
+msg.classList.add("message","ai")
+
+msg.innerText="Typing..."
+
+chatBox.appendChild(msg)
+
+chatBox.scrollTop=chatBox.scrollHeight
+
+setTimeout(()=>{
+
+msg.innerText=reply
+
+},800)
 
 }
 
 function clearChat(){
 
-document.getElementById("chatBox").innerHTML="";
+chatBox.innerHTML=""
 
 }
 
-async function sendMessage(){
+function changeBackground(){
 
-let input=document.getElementById("userInput");
+let color=document.getElementById("colorInput").value
 
-let chat=document.getElementById("chatBox");
-
-let message=input.value.trim();
-
-if(message==="") return;
-
-chat.innerHTML+="<p><b>You:</b> "+message+"</p>";
-
-chat.innerHTML+="<p id='thinking'><b>Ahmad AI:</b> Thinking...</p>";
-
-chat.scrollTop=chat.scrollHeight;
-
-input.value="";
-
-try{
-
-let response=await fetch("https://api.allorigins.win/raw?url=https://api.affiliateplus.xyz/api/chatbot?message="+encodeURIComponent(message)+"&botname=AhmadAI&ownername=Ahmad");
-
-let data=await response.json();
-
-document.getElementById("thinking").innerHTML="<b>Ahmad AI:</b> "+data.message;
+document.body.style.backgroundColor=color
 
 }
 
-catch{
+function enterSend(event){
 
-document.getElementById("thinking").innerHTML="<b>Ahmad AI:</b> Sorry, something went wrong.";
+if(event.key==="Enter"){
+
+sendMessage()
 
 }
 
 }
 
-function changeColor(){
+function generateImage(){
 
-let color=document.getElementById("colorInput").value;
+let prompt=document.getElementById("imagePrompt").value
 
-document.body.style.background=color;
+if(prompt==="") return
 
-}
+let img=document.createElement("img")
 
-function showChess(){
+img.classList.add("generated")
 
-document.getElementById("chess").style.display="block";
+img.src="https://source.unsplash.com/600x400/?"+prompt
+
+document.body.appendChild(img)
 
 }
