@@ -1,33 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ahmad AI</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahmad AI Chat</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body onload="startChat()">
 
-<!-- Logo at top (inline SVG, ready-to-use) -->
-<div class="chatLogo">
-  <svg width="120" height="120" viewBox="0 0 100 100">
-    <circle cx="50" cy="50" r="48" stroke="#3498db" stroke-width="4" fill="#4CAF50"/>
-    <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="40" fill="white">AI</text>
-  </svg>
-</div>
+  <!-- Header with logo -->
+  <header>
+    <img src="logo.png" alt="Ahmad AI Logo" class="logo">
+    <h1>Ahmad AI</h1>
+  </header>
 
-<!-- Chat box -->
-<div id="chatBox"></div>
+  <!-- Chat container -->
+  <div class="chat-container">
+    <div id="chatBox" class="chat-box"></div>
+    <input type="text" id="userInput" placeholder="Type a message..." onkeydown="enterSend(event)">
+    <div class="buttons">
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="clearChat()">Clear</button>
+      <input type="color" id="colorInput" onchange="changeBackground()" title="Pick background color">
+    </div>
+  </div>
 
-<!-- User input section -->
-<div id="userControls">
-  <input type="text" id="userInput" onkeydown="enterSend(event)" placeholder="Type your message...">
-  <button onclick="sendMessage()">Send</button>
-  <button onclick="clearChat()">Clear</button>
-  <input type="color" id="colorInput" onchange="changeBackground()" title="Change background color">
-</div>
-
-<!-- JS -->
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
