@@ -42,45 +42,4 @@ function findReply(text) {
     return "Interesting! Tell me more.";
 }
 
-function addMessage(type, text) {
-    let msg = document.createElement("div");
-    msg.classList.add("message", type);
-    msg.innerText = text;
-    chatBox.appendChild(msg);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function typingEffect(reply) {
-    let msg = document.createElement("div");
-    msg.classList.add("message", "ai");
-    msg.innerText = "Typing...";
-    chatBox.appendChild(msg);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    setTimeout(() => {
-        msg.innerText = reply;
-    }, 800);
-}
-
-function clearChat() {
-    chatBox.innerHTML = "";
-}
-
-function changeBackground() {
-    let color = document.getElementById("colorInput").value;
-    document.body.style.backgroundColor = color;
-}
-
-function enterSend(event) {
-    if (event.key === "Enter") {
-        sendMessage();
-    }
-}
-
-function generateImage() {
-    let prompt = document.getElementById("imagePrompt").value.trim();
-    if (prompt === "") return;
-    let img = document.createElement("img");
-    img.classList.add("generated");
-    img.src = "https://source.unsplash.com/600x400/?" + encodeURIComponent(prompt);
-    document.body.appendChild(img);
-}
+function addMessage(
