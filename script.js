@@ -66,25 +66,31 @@ async function sendMessage(){
 
   let reply = null;
 
-  // 1️⃣ Check math first
-  reply = checkMath(text);
+  // Normalize input: remove punctuation & trim
+  const normalizedText = text.toLowerCase().replace(/[?.!,،]/g,"").trim();
 
-  // 2️⃣ Wikipedia search for questions starting with "who is" or "what is"
-  if(!reply && (text.toLowerCase().startsWith("who is") || text.toLowerCase().startsWith("what is"))){
-    const searchQuery = text.replace(/who is|what is/i,"").trim();
+  // 1️⃣ Check math
+  reply = checkMath(normalizedText);
+
+  // 2️⃣ Wikipedia search if "who is" / "what is" (English)
+  if(!reply && (normalizedText.startsWith("who is") || normalizedText.startsWith("what is"))){
+    const searchQuery = normalizedText.replace(/who is|what is/i,"").trim();
     if(searchQuery){
-      typingEffect("Searching...");
-      reply = await searchWikipedia(searchQuery);
+        typingEffect("Searching...");
+        reply = await searchWikipedia(searchQuery);
     }
   }
 
-  // 3️⃣ If still no reply, check predefined replies
-  if(!reply) reply = findReply(text);
+  // 3️⃣ Check predefined replies (English + Arabic)
+  if(!reply) reply = findReply(normalizedText);
+
+  // 4️⃣ Fallback
+  if(!reply) reply = fallbackReplies[Math.floor(Math.random()*fallbackReplies.length)];
 
   typingEffect(reply);
 
-  // 4️⃣ Embed chess if needed
-  if(text.toLowerCase().includes("play chess")) embedChess();
+  // 5️⃣ Embed chess if needed
+  if(normalizedText.includes("play chess")) embedChess();
 
   userInput.value="";
 }
@@ -121,20 +127,21 @@ function changeBackground(){ document.body.style.backgroundColor = colorPicker.v
 
 // ------------------- MATH -------------------
 function checkMath(text){
-  text = text.toLowerCase().replace("what is","").replace("what's","").replace("what’s","").trim();
-  text = text.replace(/plus/g,"+").replace(/minus/g,"-").replace(/times/g,"*")
+  let mathText = text.replace("what is","").replace("what's","").replace("what’s","").trim();
+  mathText = mathText.replace(/plus/g,"+").replace(/minus/g,"-").replace(/times/g,"*")
              .replace(/multiplied by/g,"*").replace(/x/g,"*").replace(/divided by/g,"/").replace(/over/g,"/");
-  if(/^[0-9+\-*/().\s]+$/.test(text)){
-    try{ return `Answer: ${eval(text)}` }catch(e){ return null; }
+  if(/^[0-9+\-*/().\s]+$/.test(mathText)){
+    try{ return `Answer: ${eval(mathText)}` }catch(e){ return null; }
   }
   return null;
 }
 
 // ------------------- SIMPLE REPLIES -------------------
 function findReply(text){
-  text = text.toLowerCase().replace(/[?.!,]/g,"");
-  for(let key in replies) if(text.includes(key)) return replies[key];
-  return fallbackReplies[Math.floor(Math.random()*fallbackReplies.length)];
+  for(let key in replies){
+    if(text === key) return replies[key]; // exact match
+  }
+  return null; // fallback handled in sendMessage
 }
 
 // ------------------- CHESS -------------------
