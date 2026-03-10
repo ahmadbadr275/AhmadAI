@@ -1,127 +1,130 @@
-Interesting! Tell me more.",
-"That sounds interesting.",
-"I'm not sure about that yet.",
-"Can you explain more?",
-"Tell me something else."
+const chatBox = document.getElementById("chatBox");
+
+const replies = {
+  "hi":"Hello!",
+  "hello":"Hi there!",
+  "hey":"Hey!",
+  "how are you":"I'm doing great!",
+  "who are you":"I am Ahmad AI, a simple web chatbot.",
+  "who is newton":"Isaac Newton was a scientist who discovered gravity and developed the laws of motion.",
+  "who is einstein":"Albert Einstein was a physicist famous for the theory of relativity.",
+  "what is ai":"AI means Artificial Intelligence.",
+  "what is gravity":"Gravity is the force that pulls objects toward each other.",
+  "what is the sun":"The Sun is the star at the center of our solar system.",
+  "what is earth":"Earth is the planet we live on.",
+  "what is mars":"Mars is the fourth planet from the Sun.",
+  "thanks":"You're welcome!",
+  "thank you":"No problem!",
+  "bye":"Goodbye!",
+  "play chess":"Opening chess board..."
+};
+
+const fallbackReplies = [
+  "I don't know that yet, but I'm learning.",
+  "That sounds interesting, tell me more.",
+  "Can you explain that differently?"
 ];
 
 function startChat(){
-addMessage("ai","Hello! How can I help you today?");
+  addMessage("ai","Hello! Ask me something, type math like '5 plus 3', or type 'play chess'.");
 }
 
 function sendMessage(){
+  const input = document.getElementById("userInput");
+  let text = input.value.trim();
+  if(text==="") return;
 
-let input=document.getElementById("userInput");
+  addMessage("user", text);
 
-let text=input.value.trim().toLowerCase();
+  let reply = checkMath(text);
 
-if(text==="") return;
+  if(!reply) reply = findReply(text);
 
-addMessage("user",text);
+  typingEffect(reply);
 
-let reply=findReply(text);
+  if(text.toLowerCase().includes("play chess")) playChess();
 
-typingEffect(reply);
+  input.value="";
+}
 
-input.value="";
+function checkMath(text){
+  text = text.toLowerCase();
+  text = text.replace("what is","").replace("what's","").trim();
+  text = text.replace(/plus/g,"+")
+             .replace(/minus/g,"-")
+             .replace(/times/g,"*")
+             .replace(/multiplied by/g,"*")
+             .replace(/x/g,"*")
+             .replace(/divided by/g,"/")
+             .replace(/over/g,"/");
+
+  if(/^[0-9+\-*/().\s]+$/.test(text)){
+    try{
+      let result = eval(text);
+      return `Answer: ${result}`;
+    }catch(e){
+      return null;
+    }
+  }
+  return null;
 }
 
 function findReply(text){
-
-text=text.replace(/[?.!,]/g,"");
-
-for(let key in replies){
-if(text.includes(key)){
-return replies[key];
-}
-}
-
-if(text.includes("play chess")){
-playChess();
-return "Opening chess game...";
-}
-
-return fallbackReplies[Math.floor(Math.random()*fallbackReplies.length)];
+  text = text.toLowerCase().replace(/[?.!,]/g,"");
+  for(let key in replies){
+    if(text.includes(key)) return replies[key];
+  }
+  return fallbackReplies[Math.floor(Math.random()*fallbackReplies.length)];
 }
 
 function addMessage(type,text){
-
-let msg=document.createElement("div");
-
-msg.classList.add("message",type);
-
-msg.innerText=text;
-
-chatBox.appendChild(msg);
-
-chatBox.scrollTop=chatBox.scrollHeight;
-
+  let msg = document.createElement("div");
+  msg.classList.add("message", type);
+  msg.innerText = text;
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function typingEffect(reply){
+  let msg = document.createElement("div");
+  msg.classList.add("message","ai");
+  msg.innerText="Typing...";
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
 
-let msg=document.createElement("div");
-
-msg.classList.add("message","ai");
-
-msg.innerText="Typing...";
-
-chatBox.appendChild(msg);
-
-chatBox.scrollTop=chatBox.scrollHeight;
-
-setTimeout(()=>{
-msg.innerText=reply;
-},600);
-
+  setTimeout(()=>{ msg.innerText=reply; },600);
 }
 
 function clearChat(){
-chatBox.innerHTML="";
+  chatBox.innerHTML="";
 }
 
 function changeBackground(){
-
-let color=document.getElementById("colorInput").value;
-
-document.body.style.backgroundColor=color;
-
+  const color = document.getElementById("colorInput").value;
+  document.body.style.backgroundColor=color;
 }
 
 function enterSend(event){
-
-if(event.key==="Enter"){
-sendMessage();
-}
-
+  if(event.key==="Enter") sendMessage();
 }
 
 function playChess(){
+  let chessArea = document.getElementById("chessArea");
+  if(!chessArea){
+    chessArea = document.createElement("div");
+    chessArea.id="chessArea";
+    chessArea.style.marginTop="25px";
+    chessArea.style.textAlign="center";
+    document.body.appendChild(chessArea);
+  }
 
-let chessArea=document.getElementById("chessArea");
-
-if(!chessArea){
-
-chessArea=document.createElement("div");
-
-chessArea.id="chessArea";
-
-chessArea.style.marginTop="25px";
-
-chessArea.style.textAlign="center";
-
-document.body.appendChild(chessArea);
-
-}
-
-chessArea.innerHTML = `
-<h2>Chess Game</h2>
-<iframe 
-src="https://www.chess.com/play/computer"
-width="650"
-height="650"
-style="border:none;border-radius:10px;">
-</iframe>
-`;
-
+  chessArea.innerHTML = `
+    <h2>Chess Game</h2>
+    <iframe 
+      src="https://www.chess.com/play/computer" 
+      width="650" 
+      height="650" 
+      style="border:none;border-radius:10px;">
+    </iframe>
+  `;
 }
