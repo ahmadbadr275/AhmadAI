@@ -1,28 +1,4 @@
-const chatBox = document.getElementById("chatBox");
-
-const replies = {
-
-"hi":"Hello!",
-"hello":"Hi there!",
-"hey":"Hey!",
-"how are you":"I'm doing great!",
-"who are you":"I am Ahmad AI, a simple web AI.",
-"what is ai":"AI means Artificial Intelligence.",
-"what can you do":"I can chat with you and let you play chess.",
-"bye":"Goodbye!",
-"thanks":"You're welcome!",
-"thank you":"No problem!",
-"good morning":"Good morning!",
-"good night":"Good night!",
-"what is your name":"My name is Ahmad AI.",
-"who made you":"I was created by a developer.",
-"tell me a joke":"Why do programmers prefer dark mode? Because light attracts bugs.",
-"help":"You can chat with me or type 'play chess'."
-
-};
-
-const fallbackReplies = [
-"Interesting! Tell me more.",
+Interesting! Tell me more.",
 "That sounds interesting.",
 "I'm not sure about that yet.",
 "Can you explain more?",
