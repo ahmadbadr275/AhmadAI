@@ -1,48 +1,31 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
-<title>Ahmad AI</title>
-
-<!-- Favicon using Base64 embedded logo -->
-<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAADDPmHLAAABeElEQVR4nO3QsQkAMAzAsPz/02KgFEg3m8syHn+MwsAAAAAAAAAAAAAAAAgCz2aB8AAAAAAACAdG2fAAAAAAAAgN5GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACA3YRtAAAAAAAAgN2GbQAAAAAAACwPyfx2FwV2nNj0AAAAASUVORK5CYII=">
-
-<link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahmad AI</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<body onload="startChat()">
 
-<body>
+  <!-- Logo at top -->
+  <img src="logo.png" alt="Ahmad AI Logo" class="chatLogo">
 
-<h1>Ahmad AI 🤖</h1>
+  <!-- Chat box -->
+  <div id="chatBox"></div>
 
-<div class="controls">
+  <!-- User input section -->
+  <div id="userControls" style="margin-top:10px;">
+    <input type="text" id="userInput" onkeydown="enterSend(event)" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="clearChat()">Clear</button>
+    <input type="color" id="colorInput" onchange="changeBackground()" title="Change background color">
+  </div>
 
-<input id="colorInput" placeholder="Type a color">
-<button onclick="changeBackground()">Change Background</button>
+  <!-- Chess area (appears when user types 'play chess') -->
+  <div id="chessArea"></div>
 
-<button onclick="startChat()">Start Chat</button>
-<button onclick="clearChat()">Clear Chat</button>
-
-</div>
-
-<div id="chatBox"></div>
-
-<div class="inputArea">
-
-<input id="userInput" placeholder="Ask something..." onkeypress="enterSend(event)">
-<button onclick="sendMessage()">Send</button>
-
-</div>
-
-<div class="imageGen">
-
-<input id="imagePrompt" placeholder="Generate image (example: space)">
-<button onclick="generateImage()">Generate Photo</button>
-
-</div>
-
-<script src="script.js"></script>
-
+  <!-- Script -->
+  <script src="script.js"></script>
 </body>
 </html>
