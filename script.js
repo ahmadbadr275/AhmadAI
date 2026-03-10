@@ -21,8 +21,8 @@ const replies = {
 
 const fallbackReplies = [
   "I don't know that yet, but I'm learning.",
-  "That sounds interesting, tell me more.",
-  "Can you explain that differently?"
+  "Can you explain that differently?",
+  "Interesting! Tell me more."
 ];
 
 function startChat(){
@@ -37,12 +37,11 @@ function sendMessage(){
   addMessage("user", text);
 
   let reply = checkMath(text);
-
   if(!reply) reply = findReply(text);
 
   typingEffect(reply);
 
-  if(text.toLowerCase().includes("play chess")) playChess();
+  if(text.toLowerCase().includes("play chess")) embedChess();
 
   input.value="";
 }
@@ -108,23 +107,10 @@ function enterSend(event){
   if(event.key==="Enter") sendMessage();
 }
 
-function playChess(){
-  let chessArea = document.getElementById("chessArea");
-  if(!chessArea){
-    chessArea = document.createElement("div");
-    chessArea.id="chessArea";
-    chessArea.style.marginTop="25px";
-    chessArea.style.textAlign="center";
-    document.body.appendChild(chessArea);
-  }
-
-  chessArea.innerHTML = `
-    <h2>Chess Game</h2>
-    <iframe 
-      src="https://www.chess.com/play/computer" 
-      width="650" 
-      height="650" 
-      style="border:none;border-radius:10px;">
-    </iframe>
-  `;
+function embedChess(){
+  let iframe = document.createElement("iframe");
+  iframe.id = "chessFrame";
+  iframe.src = "https://www.chess.com/play/computer";
+  chatBox.appendChild(iframe);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
