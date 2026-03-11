@@ -133,13 +133,12 @@ function safeMath(text) {
       .replace("minus","-")
       .replace(/times|multiplied by|x/g,"*")
       .replace(/divided by|over/g,"/")
-      // Arabic math
       .replace(/زائد/g,"+")
       .replace(/ناقص/g,"-")
       .replace(/ضرب|×/g,"*")
       .replace(/قسمة|÷/g,"/");
     
-    expr = expr.replace(/[^0-9+\-*/().\s]/g,""); // remove unsafe chars
+    expr = expr.replace(/[^0-9+\-*/().\s]/g,""); 
     if (/^[0-9+\-*/().\s]+$/.test(expr)) {
       return "Answer: " + Function('"use strict";return ('+expr+')')();
     }
