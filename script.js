@@ -47,7 +47,7 @@ function startChat(){
 }
 
 // ---------------- SEND MESSAGE ----------------
-function sendMessage(){
+async function sendMessage(){
 
   let text = userInput.value.trim();
   if(text === "") return;
@@ -64,13 +64,24 @@ function sendMessage(){
     return;
   }
 
-  // ---------- FIND REPLY ----------
+  // ---------- BASIC REPLIES ----------
   let reply = null;
 
   for(let key in replies){
     if(clean.includes(normalize(key))){
       reply = replies[key];
       break;
+    }
+  }
+
+  // ---------- WIKIPEDIA SEARCH ----------
+  if(!reply){
+    if(
+      clean.startsWith("who is") ||
+      clean.startsWith("what is") ||
+      clean.startsWith("tell me about")
+    ){
+      reply = await searchWikipedia(clean);
     }
   }
 
@@ -186,6 +197,36 @@ function checkMath(text){
   }
 
   return null;
+
+}
+
+// ---------------- WIKIPEDIA SEARCH ----------------
+async function searchWikipedia(question){
+
+  let query = question
+  .replace("who is","")
+  .replace("what is","")
+  .replace("tell me about","")
+  .trim();
+
+  const url = "https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(query);
+
+  try{
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if(data.extract){
+      return data.extract;
+    }
+
+    return "I couldn't find information.";
+
+  }catch{
+
+    return "Error searching.";
+
+  }
 
 }
 
