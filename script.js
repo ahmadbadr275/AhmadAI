@@ -3,47 +3,47 @@ const chatBox = document.getElementById("chatBox");
 const userInput = document.getElementById("userInput");
 const colorPicker = document.getElementById("colorInput");
 
-// ---------- REPLIES WITH SAFE TYPO/SYNONYM SUPPORT ----------
+// ---------- REPLIES WITH EMOJIS ----------
 const replies = {
   // English
-  "hi":"Hello!",
-  "hii":"Hello!",
-  "hello":"Hi there!",
-  "hey":"Hey!",
-  "ok":"Ok",
-  "wok":"Ok",
-  "thanks":"You're welcome!",
-  "thank you":"No problem!",
-  "thx":"No problem!",
-  "bye":"Goodbye!",
-  "goodbye":"See you later!",
-  "yes":"Great!",
-  "yess":"Great!",
-  "no":"Alright.",
-  "noo":"Alright.",
-  "who are you":"I am Ahmad AI.",
-  "play chess":"Opening chess board...",
+  "hi":"Hello! 👋",
+  "hii":"Hello! 👋",
+  "hello":"Hi there! 🙂",
+  "hey":"Hey! 😃",
+  "ok":"Ok ✅",
+  "wok":"Ok ✅",
+  "thanks":"You're welcome! 🙏",
+  "thank you":"No problem! 👍",
+  "thx":"No problem! 👍",
+  "bye":"Goodbye! 👋",
+  "goodbye":"See you later! 👋",
+  "yes":"Great! 🎉",
+  "yess":"Great! 🎉",
+  "no":"Alright. ⚠️",
+  "noo":"Alright. ⚠️",
+  "who are you":"I am Ahmad AI 🤖",
+  "play chess":"Opening chess board... ♟️",
 
   // Arabic
-  "مرحبا":"أهلاً!",
-  "أهلا":"أهلاً!",
-  "هلا":"أهلاً!",
-  "السلام عليكم":"وعليكم السلام!",
-  "كيف حالك":"أنا بخير!",
-  "تمام":"أنا بخير!",
-  "شكرا":"على الرحب والسعة!",
-  "شكرًا":"على الرحب والسعة!",
-  "مع السلامة":"إلى اللقاء!",
-  "باي":"إلى اللقاء!"
+  "مرحبا":"أهلاً! 👋",
+  "أهلا":"أهلاً! 👋",
+  "هلا":"أهلاً! 👋",
+  "السلام عليكم":"وعليكم السلام! ✋",
+  "كيف حالك":"أنا بخير! 🙂",
+  "تمام":"أنا بخير! 🙂",
+  "شكرا":"على الرحب والسعة! 🙏",
+  "شكرًا":"على الرحب والسعة! 🙏",
+  "مع السلامة":"إلى اللقاء! 👋",
+  "باي":"إلى اللقاء! 👋"
 };
 
 // ---------- FALLBACKS ----------
-const fallbackEN = ["I don't know that yet.","Interesting! Tell me more.","Can you explain differently?"];
-const fallbackAR = ["لا أعرف ذلك بعد.","مثير للاهتمام، أخبرني أكثر."];
+const fallbackEN = ["I don't know that yet. 🤔","Interesting! Tell me more…","Can you explain differently?"];
+const fallbackAR = ["لا أعرف ذلك بعد. 🤔","مثير للاهتمام، أخبرني أكثر…"];
 
 // ---------- START CHAT ----------
 function startChat() {
-  addMessage("ai", "Hello! مرحبا!");
+  addMessage("ai", "Hello! مرحبا! 👋");
 }
 
 // ---------- SEND MESSAGE ----------
@@ -133,12 +133,13 @@ function safeMath(text) {
       .replace("minus","-")
       .replace(/times|multiplied by|x/g,"*")
       .replace(/divided by|over/g,"/")
+      // Arabic math
       .replace(/زائد/g,"+")
       .replace(/ناقص/g,"-")
       .replace(/ضرب|×/g,"*")
       .replace(/قسمة|÷/g,"/");
     
-    expr = expr.replace(/[^0-9+\-*/().\s]/g,""); 
+    expr = expr.replace(/[^0-9+\-*/().\s]/g,""); // remove unsafe chars
     if (/^[0-9+\-*/().\s]+$/.test(expr)) {
       return "Answer: " + Function('"use strict";return ('+expr+')')();
     }
