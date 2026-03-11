@@ -7,20 +7,20 @@ const colorPicker = document.getElementById("colorInput");
 const replies = {
   // English
   "hi":"Hello!",
-  "hii":"Hello!",           // typo
+  "hii":"Hello!",
   "hello":"Hi there!",
   "hey":"Hey!",
   "ok":"Ok",
-  "wok":"Ok",               // typo
+  "wok":"Ok",
   "thanks":"You're welcome!",
   "thank you":"No problem!",
-  "thx":"No problem!",      // synonym
+  "thx":"No problem!",
   "bye":"Goodbye!",
   "goodbye":"See you later!",
   "yes":"Great!",
-  "yess":"Great!",           // typo
+  "yess":"Great!",
   "no":"Alright.",
-  "noo":"Alright.",          // typo
+  "noo":"Alright.",
   "who are you":"I am Ahmad AI.",
   "play chess":"Opening chess board...",
 
@@ -73,7 +73,8 @@ async function sendMessage() {
 
   // --- Wikipedia search ---
   if (!reply) {
-    if (clean.startsWith("who is") || clean.startsWith("what is") || clean.startsWith("tell me about")) {
+    if (clean.startsWith("who is") || clean.startsWith("what is") || clean.startsWith("tell me about") ||
+        clean.startsWith("من هو") || clean.startsWith("ما هو") || clean.startsWith("حدثني عن")) {
       reply = await searchWikipedia(clean);
     }
   }
@@ -90,7 +91,7 @@ async function sendMessage() {
   // --- Typing animation ---
   setTimeout(() => { typingEffect(reply); }, 500);
 
-  if (clean.includes("play chess")) embedChess();
+  if (clean.includes("play chess") || clean.includes("شطرنج")) embedChess();
 
   userInput.value = "";
 }
@@ -123,13 +124,22 @@ function clearChat() { chatBox.innerHTML = ""; }
 // ---------- CHANGE BACKGROUND ----------
 function changeBackground() { document.body.style.backgroundColor = colorPicker.value; }
 
-// ---------- SAFE MATH PARSER ----------
+// ---------- SAFE MATH PARSER (EN + AR) ----------
 function safeMath(text) {
   try {
-    let expr = text.replace("what is","").replace(/plus/g,"+").replace(/minus/g,"-")
-                   .replace(/times|multiplied by|x/g,"*")
-                   .replace(/divided by|over/g,"/");
-    expr = expr.replace(/[^0-9+\-*/().\s]/g,"");
+    let expr = text.toLowerCase()
+      .replace("what is","")
+      .replace("plus","+")
+      .replace("minus","-")
+      .replace(/times|multiplied by|x/g,"*")
+      .replace(/divided by|over/g,"/")
+      // Arabic math
+      .replace(/زائد/g,"+")
+      .replace(/ناقص/g,"-")
+      .replace(/ضرب|×/g,"*")
+      .replace(/قسمة|÷/g,"/");
+    
+    expr = expr.replace(/[^0-9+\-*/().\s]/g,""); // remove unsafe chars
     if (/^[0-9+\-*/().\s]+$/.test(expr)) {
       return "Answer: " + Function('"use strict";return ('+expr+')')();
     }
@@ -137,17 +147,23 @@ function safeMath(text) {
   return null;
 }
 
-// ---------- WIKIPEDIA SEARCH ----------
+// ---------- WIKIPEDIA SEARCH (EN + AR) ----------
 async function searchWikipedia(question) {
-  let query = question.replace("who is","").replace("what is","").replace("tell me about","").trim();
-  const url = "https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(query);
+  let query = question
+    .replace(/who is|what is|tell me about|من هو|ما هو|حدثني عن/gi,"")
+    .trim();
+
+  const isArabic = /[ء-ي]/.test(query);
+  const url = (isArabic ? "https://ar.wikipedia.org/api/rest_v1/page/summary/" : "https://en.wikipedia.org/api/rest_v1/page/summary/") 
+              + encodeURIComponent(query);
+
   try {
     const response = await fetch(url);
     const data = await response.json();
     if (data.extract) return data.extract;
-    return "I couldn't find information.";
+    return isArabic ? "لم أتمكن من العثور على معلومات." : "I couldn't find information.";
   } catch {
-    return "Error searching.";
+    return isArabic ? "حدث خطأ في البحث." : "Error searching.";
   }
 }
 
