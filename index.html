@@ -16,11 +16,11 @@
   <!-- Chat container -->
   <div class="chat-container">
     <div id="chatBox" class="chat-box"></div>
-    <input type="text" id="userInput" placeholder="Type a message..." onkeydown="enterSend(event)" />
+    <input type="text" id="userInput" placeholder="Type a message..." onkeydown="enterSend(event)">
     <div class="buttons">
       <button onclick="sendMessage()">Send</button>
       <button onclick="clearChat()">Clear</button>
-      <input type="color" id="colorInput" onchange="changeBackground()" title="Pick background color" />
+      <input type="color" id="colorInput" onchange="changeBackground()" title="Pick background color">
     </div>
   </div>
 
@@ -29,6 +29,7 @@
     Ahmad AI can make mistakes.
   </div>
 
+  <!-- Scripts -->
   <script src="script.js"></script>
   <script>
     // Automatic background based on time
@@ -41,5 +42,6 @@
       }
     }
   </script>
+
 </body>
 </html>
