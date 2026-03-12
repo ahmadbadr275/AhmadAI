@@ -4,44 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ahmad AI Chat</title>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+
+  <!-- JS Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
 </head>
-<body onload="startChat(); setBackgroundByTime();">
+<body onload="startChat()">
 
   <!-- Header -->
   <header>
+    <img src="logo.png" alt="Ahmad AI Logo" class="logo">
     <h1>Ahmad AI</h1>
   </header>
 
-  <!-- Chat container -->
-  <main class="chat-container">
+  <!-- Chat Container -->
+  <div class="chat-container">
     <div id="chatBox" class="chat-box"></div>
     <input type="text" id="userInput" placeholder="Type a message..." onkeydown="enterSend(event)">
     <div class="buttons">
-      <button type="button" onclick="sendMessage()">Send</button>
-      <button type="button" onclick="clearChat()">Clear</button>
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="clearChat()">Clear</button>
       <input type="color" id="colorInput" onchange="changeBackground()" title="Pick background color">
     </div>
-  </main>
+  </div>
 
-  <!-- Note under chat -->
-  <footer class="chat-note">
-    Ahmad AI can make mistakes.
-  </footer>
+  <!-- Chess Board -->
+  <div id="chessBoard" style="width:100%; max-width:500px; margin:20px auto;"></div>
 
-  <!-- Scripts -->
+  <!-- JS -->
   <script src="script.js"></script>
-  <script>
-    // Automatic background based on time
-    function setBackgroundByTime() {
-      const hour = new Date().getHours();
-      if (hour >= 6 && hour < 18) {
-        document.body.style.backgroundColor = "#ffffff"; // morning/day
-      } else {
-        document.body.style.backgroundColor = "#222222"; // night
-      }
-    }
-  </script>
-
 </body>
 </html>
