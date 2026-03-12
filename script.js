@@ -87,7 +87,7 @@ function typingEffect(reply){
 }
 
 function clearChat(){ chatBox.innerHTML=""; }
-function changeBackground(){ document.body.style.backgroundColor=colorPicker.value; }
+function changeBackground(){ document.body.style.backgroundColor = colorPicker.value; }
 
 function safeMath(text){
   try{
