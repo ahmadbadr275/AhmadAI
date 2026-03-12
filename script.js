@@ -17,7 +17,7 @@ const replies = {
   "thank you":"No problem 👍",
   "bye":"Goodbye 👋",
   "who are you":"I am Ahmad AI 🤖",
-  
+
   // Arabic
   "مرحبا":"أهلاً 👋",
   "السلام عليكم":"وعليكم السلام",
@@ -37,6 +37,31 @@ const fallbackAR = ["لم أجد معلومات عن ذلك","سؤال مثير 
 let board = null;
 let game = new Chess();
 
+// ================== STOCKFISH ENGINE ==================
+let stockfish = null;
+function initEngine(){
+  if(stockfish) return;
+  stockfish = STOCKFISH(); // make sure stockfish.wasm.js is loaded
+}
+
+function askEngine(fen, depth=15){
+  return new Promise((resolve) => {
+    initEngine();
+    stockfish.onmessage = function(event){
+      let line = event.data + "";
+      if(line.startsWith("bestmove")){
+        let best = line.split(" ")[1];
+        resolve(best);
+      }
+    };
+    
+    stockfish.postMessage("uci");
+    stockfish.postMessage("isready");
+    stockfish.postMessage("position fen " + fen);
+    stockfish.postMessage("go depth " + depth);
+  });
+}
+
 // ================== CHAT FUNCTIONS ==================
 function startChat(){
   addMessage("ai","Hello! 👋 Ask me something or type 'play chess' / 'العب شطرنج'.");
@@ -49,13 +74,11 @@ async function sendMessage(){
   let clean = text.toLowerCase().replace(/[?.!,]/g,"");
 
   // ---------- CHESS TRIGGER FIRST ----------
-  if(/\b(play chess|chess)\b/i.test(clean) ||
-     /شطرنج/.test(clean) ||
-     /العب شطرنج/.test(clean) ||
-     /ابدأ شطرنج/.test(clean)) {
-       initChess();
-       userInput.value = "";
-       return; // stop further replies
+  const chessCommands = ["play chess","chess","شطرنج","العب شطرنج","ابدأ شطرنج"];
+  if(chessCommands.some(cmd => clean.includes(cmd))){
+      initChess();
+      userInput.value = "";
+      return; // stop further replies
   }
 
   let reply = null;
@@ -87,7 +110,6 @@ async function sendMessage(){
   userInput.value = "";
 }
 
-// Display messages with correct text direction
 function addMessage(type,text){
   let msg = document.createElement("div");
   msg.classList.add("message",type);
@@ -130,7 +152,7 @@ function safeMath(text){
   return null;
 }
 
-// ================== WIKIPEDIA SEARCH ==================
+// ================== WIKIPEDIA ==================
 async function searchWikipedia(question){
   let query = question.replace(/who|what|where|when|why|how|which|define|tell me|is|are|ما|من|أين|متى|لماذا/gi,"").trim();
   let isArabic = /[ء-ي]/.test(query);
@@ -154,26 +176,26 @@ async function searchWikipedia(question){
 // ================== CHESS ==================
 function initChess(){
   addMessage("ai","Chess started! ♟️ Drag your piece to move. AI will respond.");
-  // Clear previous board
   document.getElementById("chessBoardContainer").innerHTML = '<div id="chessBoard"></div>';
   game.reset();
-  const config = {
+  board = Chessboard('chessBoard',{
     draggable:true,
     position:'start',
     onDrop:function(source,target){
       let move = game.move({from:source,to:target,promotion:'q'});
       if(move===null) return 'snapback';
-      setTimeout(makeAIMove,400);
+      setTimeout(makeAIMove,300);
     }
-  };
-  board = Chessboard('chessBoard',config);
+  });
 }
 
-function makeAIMove(){
-  let moves = game.moves();
-  if(moves.length===0) return;
-  let move = moves[Math.floor(Math.random()*moves.length)];
-  game.move(move);
+async function makeAIMove(){
+  let fen = game.fen();
+  let best = await askEngine(fen, 16); // depth 16 for strong moves
+  if(!best || best === "(none)") return; 
+  let from = best.substring(0,2);
+  let to   = best.substring(2,4);
+  game.move({from,to,promotion:'q'});
   board.position(game.fen());
 }
 
