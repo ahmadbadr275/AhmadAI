@@ -7,281 +7,301 @@ const colorPicker = document.getElementById("colorInput");
 /* ---------- SIMPLE REPLIES ---------- */
 
 const replies = {
-  "hi": "Hello! 👋",
-  "hello": "Hi there 🙂",
-  "hey": "Hey! 😃",
-  "how are you": "I'm good, thank you 🙂",
-  "thanks": "You're welcome 🙏",
-  "thank you": "No problem 👍",
-  "ok": "Ok ✅",
-  "yes": "Great 🎉",
-  "no": "Alright ⚠️",
-  "bye": "Goodbye 👋",
-  "who are you": "I am Ahmad AI 🤖",
-  "play chess": "Opening chess board ♟️",
 
-  "مرحبا": "أهلاً 👋",
-  "السلام عليكم": "وعليكم السلام ✋",
-  "كيف حالك": "أنا بخير 🙂",
-  "شكرا": "على الرحب والسعة 🙏",
-  "مع السلامة": "إلى اللقاء 👋"
+"hi":"Hello 👋",
+"hello":"Hi there 🙂",
+"hey":"Hey!",
+"how are you":"I'm good 🙂",
+"ok":"Ok ✅",
+"yes":"Great!",
+"no":"Alright",
+"thanks":"You're welcome 🙏",
+"thank you":"No problem 👍",
+"bye":"Goodbye 👋",
+"who are you":"I am Ahmad AI 🤖",
+"play chess":"Opening chess board ♟️",
+
+"مرحبا":"أهلاً 👋",
+"السلام عليكم":"وعليكم السلام",
+"كيف حالك":"أنا بخير 🙂",
+"شكرا":"على الرحب والسعة",
+"مع السلامة":"إلى اللقاء 👋"
+
 };
 
 /* ---------- FALLBACK ---------- */
 
 const fallbackEN = [
-  "I couldn't find that information 🤔",
-  "Interesting question!",
-  "Try asking another way"
+"I couldn't find information.",
+"Interesting question!",
+"Try asking another way."
 ];
 
 const fallbackAR = [
-  "لم أجد معلومات عن ذلك 🤔",
-  "سؤال مثير للاهتمام"
+"لم أجد معلومات عن ذلك",
+"سؤال مثير للاهتمام"
 ];
 
 /* ---------- START CHAT ---------- */
 
-function startChat() {
-  addMessage("ai", "Hello! مرحبا 👋 Ask me something.");
+function startChat(){
+
+addMessage("ai","Hello! 👋 Ask me something.");
+
 }
 
 /* ---------- SEND MESSAGE ---------- */
 
-async function sendMessage() {
+async function sendMessage(){
 
-  let text = userInput.value.trim();
-  if (text === "") return;
+let text = userInput.value.trim();
 
-  addMessage("user", text);
+if(text==="") return;
 
-  let clean = text.toLowerCase().replace(/[?.!,]/g, "");
-  let reply = null;
+addMessage("user",text);
 
-  /* ---------- MATH ---------- */
+let clean = text.toLowerCase().replace(/[?.!,]/g,"");
 
-  let math = safeMath(clean);
-  if (math !== null) {
-    typingEffect(math);
-    userInput.value = "";
-    return;
-  }
+let reply = null;
 
-  /* ---------- PREDEFINED REPLIES ---------- */
+/* ---------- MATH ---------- */
 
-  for (let key in replies) {
-    if (clean.includes(key)) {
-      reply = replies[key];
-      break;
-    }
-  }
+let math = safeMath(clean);
 
-  /* ---------- QUESTION TYPES ---------- */
+if(math!==null){
 
-  const wikiTriggersEN = [
-    "who is",
-    "what is",
-    "what are",
-    "where is",
-    "when was",
-    "when did",
-    "which",
-    "define",
-    "tell me about"
-  ];
+typingEffect(math);
 
-  const wikiTriggersAR = [
-    "من هو",
-    "ما هو",
-    "ما هي",
-    "متى",
-    "أين",
-    "لماذا",
-    "حدثني عن"
-  ];
+userInput.value="";
 
-  let useWiki =
-    wikiTriggersEN.some(q => clean.startsWith(q)) ||
-    wikiTriggersAR.some(q => clean.startsWith(q));
+return;
 
-  /* ---------- WIKIPEDIA ---------- */
+}
 
-  if (!reply && useWiki) {
-    reply = await searchWikipedia(clean);
-  }
+/* ---------- PREDEFINED REPLIES ---------- */
 
-  /* ---------- FALLBACK ---------- */
+for(let key in replies){
 
-  if (!reply) {
-    if (/[ء-ي]/.test(clean)) {
-      reply = fallbackAR[Math.floor(Math.random() * fallbackAR.length)];
-    } else {
-      reply = fallbackEN[Math.floor(Math.random() * fallbackEN.length)];
-    }
-  }
+if(clean.includes(key)){
 
-  setTimeout(() => typingEffect(reply), 500);
+reply = replies[key];
+break;
 
-  if (clean.includes("play chess") || clean.includes("شطرنج")) {
-    embedChess();
-  }
+}
 
-  userInput.value = "";
+}
+
+/* ---------- QUESTION TYPES ---------- */
+
+const wikiTriggers = [
+"who","what","where","when","why","how","which",
+"define","tell me","ما","من","أين","متى","لماذا"
+];
+
+let useWiki = wikiTriggers.some(q=>clean.startsWith(q));
+
+/* ---------- WIKIPEDIA ---------- */
+
+if(!reply && useWiki){
+
+reply = await searchWikipedia(clean);
+
+}
+
+/* ---------- FALLBACK ---------- */
+
+if(!reply){
+
+if(/[ء-ي]/.test(clean)){
+
+reply = fallbackAR[Math.floor(Math.random()*fallbackAR.length)];
+
+}else{
+
+reply = fallbackEN[Math.floor(Math.random()*fallbackEN.length)];
+
+}
+
+}
+
+/* ---------- TYPING ---------- */
+
+setTimeout(()=>typingEffect(reply),500);
+
+if(clean.includes("play chess") || clean.includes("شطرنج")) embedChess();
+
+userInput.value="";
+
 }
 
 /* ---------- ADD MESSAGE ---------- */
 
-function addMessage(type, text) {
+function addMessage(type,text){
 
-  let msg = document.createElement("div");
-  msg.classList.add("message", type);
+let msg = document.createElement("div");
 
-  if (/[ء-ي]/.test(text)) {
-    msg.style.direction = "rtl";
-  }
+msg.classList.add("message",type);
 
-  msg.innerText = text;
+if(/[ء-ي]/.test(text)) msg.style.direction="rtl";
 
-  chatBox.appendChild(msg);
-  chatBox.scrollTop = chatBox.scrollHeight;
+msg.innerText=text;
+
+chatBox.appendChild(msg);
+
+chatBox.scrollTop = chatBox.scrollHeight;
+
 }
 
 /* ---------- TYPING EFFECT ---------- */
 
-function typingEffect(reply) {
+function typingEffect(reply){
 
-  let msg = document.createElement("div");
-  msg.classList.add("message", "ai");
+let msg = document.createElement("div");
 
-  msg.innerHTML =
-    '<div class="typing"><span></span><span></span><span></span></div>';
+msg.classList.add("message","ai");
 
-  chatBox.appendChild(msg);
-  chatBox.scrollTop = chatBox.scrollHeight;
+msg.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
 
-  setTimeout(function () {
-    msg.innerText = reply;
-  }, 900);
+chatBox.appendChild(msg);
+
+chatBox.scrollTop = chatBox.scrollHeight;
+
+setTimeout(()=>{
+
+msg.innerText=reply;
+
+},900);
+
 }
 
 /* ---------- CLEAR CHAT ---------- */
 
-function clearChat() {
-  chatBox.innerHTML = "";
+function clearChat(){
+
+chatBox.innerHTML="";
+
 }
 
-/* ---------- CHANGE BACKGROUND ---------- */
+/* ---------- BACKGROUND ---------- */
 
-function changeBackground() {
-  document.body.style.backgroundColor = colorPicker.value;
+function changeBackground(){
+
+document.body.style.backgroundColor=colorPicker.value;
+
 }
 
 /* ---------- SAFE MATH ---------- */
 
-function safeMath(text) {
+function safeMath(text){
 
-  try {
+try{
 
-    let expr = text
-      .replace("what is", "")
-      .replace("plus", "+")
-      .replace("minus", "-")
-      .replace(/times|multiplied by|x/g, "*")
-      .replace(/divided by|over/g, "/")
-      .replace(/زائد/g, "+")
-      .replace(/ناقص/g, "-")
-      .replace(/ضرب/g, "*")
-      .replace(/قسمة/g, "/");
+let expr=text
+.replace("what is","")
+.replace("plus","+")
+.replace("minus","-")
+.replace(/times|multiplied by|x/g,"*")
+.replace(/divided by|over/g,"/")
+.replace(/زائد/g,"+")
+.replace(/ناقص/g,"-")
+.replace(/ضرب/g,"*")
+.replace(/قسمة/g,"/");
 
-    expr = expr.replace(/[^0-9+\-*/().\s]/g, "");
+expr=expr.replace(/[^0-9+\-*/().\s]/g,"");
 
-    if (/^[0-9+\-*/().\s]+$/.test(expr)) {
-      return "Answer: " + Function('"use strict";return (' + expr + ')')();
-    }
+if(/^[0-9+\-*/().\s]+$/.test(expr)){
 
-  } catch (e) {
-    return null;
-  }
+return "Answer: "+Function('"use strict";return ('+expr+')')();
 
-  return null;
+}
+
+}catch(e){
+
+return null;
+
+}
+
+return null;
+
 }
 
 /* ---------- WIKIPEDIA SEARCH ---------- */
 
-async function searchWikipedia(question) {
+async function searchWikipedia(question){
 
-  let query = question
-    .replace(/who is|what is|what are|where is|when was|when did|which|define|tell me about|من هو|ما هو|ما هي|متى|أين|لماذا|حدثني عن/gi, "")
-    .replace(/\b(a|an|the)\b/gi, "")
-    .trim();
+let query = question
+.replace(/who|what|where|when|why|how|which|define|tell me|is|are|ما|من|أين|متى|لماذا/gi,"")
+.trim();
 
-  let isArabic = /[ء-ي]/.test(query);
-  let lang = isArabic ? "ar" : "en";
+let isArabic = /[ء-ي]/.test(query);
 
-  try {
+let lang = isArabic ? "ar" : "en";
 
-    let searchURL =
-      "https://" + lang +
-      ".wikipedia.org/w/api.php?action=query&list=search&srsearch=" +
-      encodeURIComponent(query) +
-      "&format=json&origin=*";
+try{
 
-    let res = await fetch(searchURL);
-    let data = await res.json();
+let searchURL =
+`https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
 
-    if (data.query.search.length > 0) {
+let res = await fetch(searchURL);
 
-      let title = data.query.search[0].title;
+let data = await res.json();
 
-      let summaryURL =
-        "https://" + lang +
-        ".wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=" +
-        encodeURIComponent(title) +
-        "&format=json&origin=*";
+if(data.query.search.length>0){
 
-      let res2 = await fetch(summaryURL);
-      let data2 = await res2.json();
+let title = data.query.search[0].title;
 
-      let page = Object.values(data2.query.pages)[0];
+let summaryURL =
+`https://${lang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(title)}&format=json&origin=*`;
 
-      if (page.extract) {
-        return page.extract;
-      }
+let res2 = await fetch(summaryURL);
 
-    }
+let data2 = await res2.json();
 
-  } catch (e) {
-    console.error(e);
-  }
+let page = Object.values(data2.query.pages)[0];
 
-  return isArabic ? "لم أجد معلومات عن ذلك" : "I couldn't find information.";
+if(page.extract) return page.extract;
+
 }
 
-/* ---------- CHESS ---------- */
+}catch(e){
 
-function embedChess() {
+console.error(e);
 
-  const old = document.getElementById("chessFrame");
-  if (old) old.remove();
+}
 
-  let iframe = document.createElement("iframe");
+return isArabic ? "لم أجد معلومات" : "I couldn't find information.";
 
-  iframe.id = "chessFrame";
-  iframe.src = "https://www.chess.com/play/computer";
+}
 
-  iframe.style.width = "100%";
-  iframe.style.height = "650px";
-  iframe.style.border = "none";
-  iframe.style.marginTop = "15px";
+/* ---------- CHESS (WORKING) ---------- */
 
-  chatBox.appendChild(iframe);
-  chatBox.scrollTop = chatBox.scrollHeight;
+function embedChess(){
+
+const old = document.getElementById("chessFrame");
+
+if(old) old.remove();
+
+let iframe = document.createElement("iframe");
+
+iframe.id="chessFrame";
+
+iframe.src="https://lichess.org/embed";
+
+iframe.style.width="100%";
+iframe.style.height="650px";
+iframe.style.border="none";
+iframe.style.marginTop="15px";
+
+chatBox.appendChild(iframe);
+
+chatBox.scrollTop=chatBox.scrollHeight;
+
 }
 
 /* ---------- ENTER KEY ---------- */
 
-function enterSend(e) {
-  if (e.key === "Enter") {
-    sendMessage();
-  }
+function enterSend(e){
+
+if(e.key==="Enter") sendMessage();
+
 }
