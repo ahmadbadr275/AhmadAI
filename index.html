@@ -10,21 +10,23 @@
 </head>
 <body onload="startChat()">
 
-<header>
-  <h1>Ahmad AI Chat</h1>
-</header>
+  <!-- Header -->
+  <header>
+    <h1>Ahmad AI</h1>
+  </header>
 
-<div class="chat-container">
-  <div id="chatBox"></div>
-  <input type="text" id="userInput" placeholder="Type a message..." onkeydown="enterSend(event)">
-  <div class="buttons">
-    <button onclick="sendMessage()">Send</button>
-    <button onclick="clearChat()">Clear</button>
-    <input type="color" id="colorInput" onchange="changeBackground()" title="Pick background color">
+  <!-- Chat Container -->
+  <div class="chat-container">
+    <div id="chatBox" class="chat-box"></div>
+    <input type="text" id="userInput" placeholder="Type a message..." onkeydown="enterSend(event)">
+    <div class="buttons">
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="clearChat()">Clear</button>
+      <input type="color" id="colorInput" onchange="changeBackground()" title="Pick background color">
+    </div>
   </div>
-</div>
 
-<!-- JS -->
-<script src="script.js"></script>
+  <!-- JS -->
+  <script src="script.js"></script>
 </body>
 </html>
