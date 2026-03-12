@@ -1,3 +1,4 @@
+// ================== CHAT & AI ==================
 const chatBox = document.getElementById("chatBox");
 const userInput = document.getElementById("userInput");
 const colorPicker = document.getElementById("colorInput");
@@ -136,7 +137,7 @@ async function searchWikipedia(question){
   return isArabic ? "لم أجد معلومات" : "I couldn't find information.";
 }
 
-/* ---------- CHESS ---------- */
+// ================== CHESS ==================
 function initChess(){
   addMessage("ai","Chess started! ♟️ Drag your piece to move. AI will respond.");
   // Clear previous board
@@ -162,5 +163,5 @@ function makeAIMove(){
   board.position(game.fen());
 }
 
-/* ---------- ENTER KEY ---------- */
+// ================== ENTER KEY ==================
 function enterSend(e){ if(e.key==="Enter") sendMessage(); }
