@@ -1,48 +1,46 @@
-// ----------------- AhmadAI Free Version -----------------
+// ----------------- AhmadAI Offline Smart Chat -----------------
 
 const chatBox = document.getElementById("chatBox");
 const userInput = document.getElementById("userInput");
 const colorPicker = document.getElementById("colorInput");
 
 // ----------------- Memory -----------------
-let memory = []; // stores last 3 messages
+let memory = []; // last 5 messages
 
-// ----------------- Replies -----------------
-const replies = {
-  "hi": ["Hello 👋","Hey there 😄","Hi! What's up?"],
-  "hello": ["Hello 🙂","Hey!","Hi there 👋"],
-  "hey": ["Hey!","Yo 😎","Hey there!"],
-  "how are you": ["I'm good 🙂","Doing great! How about you?","All good here 😎"],
-  "ok": ["Alright ✅","Got it 👍","Okay!"],
-  "yes": ["Nice 😄","Great!","Awesome 👍"],
-  "no": ["Alright","Okay, no problem","Got it"],
-  "thanks": ["You're welcome 🙏","Anytime 😄","No worries 👍"],
-  "thank you": ["You're welcome 🙏","Glad to help!","No problem 👍"],
-  "bye": ["Goodbye 👋","See you later 😄","Bye!"],
-  "who are you": ["I am Ahmad AI 🤖","I'm Ahmad AI, your friendly assistant 🤖"],
-
-  // Arabic
-  "مرحبا": ["أهلاً 👋","مرحباً 😄"],
-  "السلام عليكم": ["وعليكم السلام","أهلاً وسهلاً 👋"],
-  "كيف حالك": ["أنا بخير 🙂","تمام الحمد لله 😄"],
-  "شكرا": ["على الرحب والسعة","العفو 😊"],
-  "مع السلامة": ["إلى اللقاء 👋","مع السلامة 😄"]
+// ----------------- Knowledge Library -----------------
+const knowledgeLibrary = {
+  "who is albert einstein": "Albert Einstein was a German-born theoretical physicist who developed the theory of relativity, one of the two pillars of modern physics. 🤓",
+  "who is isaac newton": "Isaac Newton was an English mathematician, physicist, and astronomer who formulated the laws of motion and universal gravitation. ⚡",
+  "what is gravity": "Gravity is a natural force that attracts objects with mass toward each other. 🌍",
+  "what is photosynthesis": "Photosynthesis is the process used by plants to convert sunlight into energy, producing oxygen and glucose. 🌱",
+  "who is napoleon": "Napoleon Bonaparte was a French military leader who became emperor of France and conquered much of Europe. 🏰",
+  "who is messi": "Lionel Messi is an Argentine professional footballer, considered one of the greatest players of all time. ⚽",
+  "what is javascript": "JavaScript is a programming language used to create interactive effects within web browsers. 💻",
+  "what is python": "Python is a high-level programming language known for readability and simplicity. 🐍",
+  "what is arabic": "Arabic is a Semitic language spoken in many countries in the Middle East and North Africa. 📝",
+  "what is ai": "AI stands for Artificial Intelligence, a branch of computer science focused on creating smart machines. 🤖",
+  "hello": "Hello! 👋 How can I help you today?",
+  "hi": "Hi there! 😄",
+  "hey": "Hey! 😎",
+  "how are you": "I'm doing great, thanks for asking! 🙂",
+  "bye": "Goodbye! 👋 See you later!",
+  "thanks": "You're welcome! 🙏",
+  "thank you": "No problem! 👍",
+  // Add more info as needed
 };
 
-// ----------------- Fallback -----------------
+// ----------------- Fallbacks -----------------
 const fallbackEN = [
   "Hmm 🤔 I’m not sure yet, but I’m learning!",
-  "That’s interesting… tell me more 👀",
-  "I don’t fully understand, can you explain it differently?",
-  "I think I need more details 😅",
+  "Interesting question! Can you tell me more?",
+  "I don’t fully understand, can you explain differently?",
   "Good question! I’ll try to improve on that."
 ];
 
 const fallbackAR = [
   "ممم 🤔 لست متأكداً بعد",
   "سؤال جميل 👀 أخبرني أكثر",
-  "لم أفهم تماماً، هل يمكنك التوضيح؟",
-  "أحتاج تفاصيل أكثر 😅"
+  "لم أفهم تماماً، هل يمكنك التوضيح؟"
 ];
 
 // ----------------- Start Chat -----------------
@@ -51,36 +49,30 @@ function startChat(){
 }
 
 // ----------------- Send Message -----------------
-async function sendMessage(){
+function sendMessage(){
   let text = userInput.value.trim();
   if(text === "") return;
 
   addMessage("user", text);
+
   memory.push(text);
-  if(memory.length > 3) memory.shift(); // keep only last 3 messages
+  if(memory.length > 5) memory.shift(); // keep last 5
 
   let clean = text.toLowerCase().replace(/[?.!,]/g,"");
   let reply = null;
 
-  // Math handling
+  // Check Knowledge Library
+  if(knowledgeLibrary[clean]){
+    reply = knowledgeLibrary[clean];
+  }
+
+  // Math
   let math = safeMath(clean);
   if(math !== null){
-    typingEffect(math);
-    userInput.value = "";
-    return;
+    reply = math;
   }
 
-  // Predefined replies
-  reply = getBestReply(clean);
-
-  // Wikipedia fallback
-  const wikiTriggers = ["who","what","where","when","why","how","which","define","tell me","ما","من","أين","متى","لماذا"];
-  let useWiki = wikiTriggers.some(q => clean.includes(q));
-  if(!reply && useWiki){
-    reply = await searchWikipedia(clean);
-  }
-
-  // Fallback random
+  // Random fallback if no match
   if(!reply){
     if(/[ء-ي]/.test(clean)){
       reply = fallbackAR[Math.floor(Math.random()*fallbackAR.length)];
@@ -89,44 +81,15 @@ async function sendMessage(){
     }
   }
 
-  // Add some personality
-  if(reply && !reply.includes("🤖")) reply += " 🤖";
-
-  setTimeout(()=>typingEffect(reply),500);
+  typingEffect(reply);
   userInput.value = "";
-}
-
-// ----------------- Best Reply -----------------
-function getBestReply(input){
-  let bestMatch = null;
-  let highestScore = 0;
-
-  for(let key in replies){
-    let words = key.split(" ");
-    let score = 0;
-
-    for(let i = 0; i < words.length; i++){
-      if(input.includes(words[i])) score++;
-    }
-
-    if(score > highestScore){
-      highestScore = score;
-      bestMatch = replies[key];
-    }
-  }
-
-  if(Array.isArray(bestMatch)){
-    return bestMatch[Math.floor(Math.random()*bestMatch.length)];
-  }
-
-  return bestMatch;
 }
 
 // ----------------- Add Message -----------------
 function addMessage(type, text){
   let msg = document.createElement("div");
   msg.classList.add("message", type);
-  if(/[ء-ي]/.test(text)) msg.style.direction="rtl";
+  if(/[ء-ي]/.test(text)) msg.style.direction = "rtl";
   msg.innerText = text;
   chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
@@ -183,28 +146,4 @@ function safeMath(text){
   } catch(e){ return null; }
 
   return null;
-}
-
-// ----------------- Wikipedia Search -----------------
-async function searchWikipedia(question){
-  let query = question.replace(/who|what|where|when|why|how|which|define|tell me|is|are|ما|من|أين|متى|لماذا/gi,"").trim();
-  let isArabic = /[ء-ي]/.test(query);
-  let lang = isArabic ? "ar" : "en";
-
-  try{
-    let searchURL = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
-    let res = await fetch(searchURL);
-    let data = await res.json();
-
-    if(data.query.search.length>0){
-      let title = data.query.search[0].title;
-      let summaryURL = `https://${lang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(title)}&format=json&origin=*`;
-      let res2 = await fetch(summaryURL);
-      let data2 = await res2.json();
-      let page = Object.values(data2.query.pages)[0];
-      if(page.extract) return page.extract.slice(0,300)+"...";
-    }
-  } catch(e){ console.error(e); }
-
-  return isArabic ? "لم أجد معلومات" : "I couldn't find information.";
 }
